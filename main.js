@@ -1,5 +1,4 @@
-// Lista de tareas (array de objetos)
-let tareas = [];
+let tareas = JSON.parse(localStorage.getItem('tareas')) || [];
 
 function agregarTarea() {
     let titulo = prompt("Ingrese el título de la tarea:");
@@ -14,15 +13,28 @@ function agregarTarea() {
     };
 
     tareas.push(nuevaTarea);
+    localStorage.setItem('tareas', JSON.stringify(tareas));
     alert("Tarea agregada: " + JSON.stringify(nuevaTarea));
+    mostrarTareasEnDOM();
 }
 
-function mostrarTareas() {
+function mostrarTareasEnDOM() {
+    let tareasDiv = document.getElementById('tareas');
+    tareasDiv.innerHTML = '';
+
     if (tareas.length === 0) {
-        alert("No hay tareas para mostrar.");
+        tareasDiv.innerHTML = '<p>No hay tareas para mostrar.</p>';
     } else {
         tareas.forEach((tarea, index) => {
-            alert(`${index + 1}. Título: ${tarea.titulo}\nDescripción: ${tarea.descripcion}\nPrioridad: ${tarea.prioridad}\nCompletada: ${tarea.completada}`);
+            let tareaDiv = document.createElement('div');
+            tareaDiv.className = 'tarea' + (tarea.completada ? ' completada' : '');
+            tareaDiv.innerHTML = `
+                <p><strong>${index + 1}. Título:</strong> ${tarea.titulo}</p>
+                <p><strong>Descripción:</strong> ${tarea.descripcion}</p>
+                <p><strong>Prioridad:</strong> ${tarea.prioridad}</p>
+                <p><strong>Completada:</strong> ${tarea.completada}</p>
+            `;
+            tareasDiv.appendChild(tareaDiv);
         });
     }
 }
@@ -33,7 +45,9 @@ function completarTarea() {
 
     if (tarea) {
         tarea.completada = true;
+        localStorage.setItem('tareas', JSON.stringify(tareas));
         alert("Tarea completada: " + JSON.stringify(tarea));
+        mostrarTareasEnDOM();
     } else {
         alert("Tarea no encontrada.");
     }
@@ -42,12 +56,21 @@ function completarTarea() {
 function filtrarTareasPorPrioridad() {
     let prioridad = prompt("Ingrese la prioridad de las tareas que quiere ver (alta, media, baja):");
     let tareasFiltradas = tareas.filter(t => t.prioridad === prioridad);
+    let tareasDiv = document.getElementById('tareas');
+    tareasDiv.innerHTML = '';
 
     if (tareasFiltradas.length === 0) {
-        alert(`No hay tareas con prioridad ${prioridad}.`);
+        tareasDiv.innerHTML = `<p>No hay tareas con prioridad ${prioridad}.</p>`;
     } else {
         tareasFiltradas.forEach((tarea, index) => {
-            alert(`Tareas con prioridad ${prioridad}:\n${index + 1}. Título: ${tarea.titulo}\nDescripción: ${tarea.descripcion}\nCompletada: ${tarea.completada}`);
+            let tareaDiv = document.createElement('div');
+            tareaDiv.className = 'tarea' + (tarea.completada ? ' completada' : '');
+            tareaDiv.innerHTML = `
+                <p><strong>${index + 1}. Título:</strong> ${tarea.titulo}</p>
+                <p><strong>Descripción:</strong> ${tarea.descripcion}</p>
+                <p><strong>Completada:</strong> ${tarea.completada}</p>
+            `;
+            tareasDiv.appendChild(tareaDiv);
         });
     }
 }
@@ -60,33 +83,9 @@ function mostrarResumenTareas() {
     alert(`Resumen de tareas:\nTotal de tareas: ${totalTareas}\nTareas completadas: ${tareasCompletadas}\nTareas pendientes: ${tareasPendientes}`);
 }
 
-function ejecutarPrograma() {
-    let opcion;
-    do {
-        opcion = prompt("Ingrese una opción: \n1. Agregar tarea \n2. Mostrar tareas \n3. Completar tarea \n4. Filtrar tareas por prioridad \n5. Mostrar resumen de tareas \n6. Salir");
-        switch (opcion) {
-            case '1':
-                agregarTarea();
-                break;
-            case '2':
-                mostrarTareas();
-                break;
-            case '3':
-                completarTarea();
-                break;
-            case '4':
-                filtrarTareasPorPrioridad();
-                break;
-            case '5':
-                mostrarResumenTareas();
-                break;
-            case '6':
-                alert("Saliendo del programa.");
-                break;
-            default:
-                alert("Opción no válida. Intente nuevamente.");
-        }
-    } while (opcion !== '6');
-}
+document.getElementById('agregarTarea').addEventListener('click', agregarTarea);
+document.getElementById('completarTarea').addEventListener('click', completarTarea);
+document.getElementById('filtrarTareas').addEventListener('click', filtrarTareasPorPrioridad);
+document.getElementById('mostrarResumen').addEventListener('click', mostrarResumenTareas);
 
-ejecutarPrograma();
+mostrarTareasEnDOM();

@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+button {
+    margin: 5px;
+}
+
+#tareas {
+    margin-top: 20px;
+}
+
+.tarea {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.completada {
+    text-decoration: line-through;
+}
